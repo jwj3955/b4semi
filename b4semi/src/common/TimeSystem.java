@@ -1,5 +1,11 @@
 package common;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.TimeZone;
 
 // 시간 경과에 따른 회원 등급 조정, 쿠폰 만료, 유통기한 만료 처리를 위한 클래스 
@@ -19,12 +25,40 @@ public class TimeSystem extends Thread {
 		{
 			isInitialized = true;
 			new TimeSystem().start();
+			
 		}
 	}
+	
+	private Socket socket = null;
 	
 	//시간 경과에 따른 쓰레드 로직
 	public void run()
 	{
+		// socket tcp connection
+		String ip = "127.0.0.1";
+		int port = 9080;
+		int number = 123;
+		try {
+		socketConnect(ip, port);
+		
+	    	while(true){
+	    		
+	    		// writes and receives the message
+	    		String message = "message"+number;
+	    		number++;
+	    		
+	    		System.out.println("Sending: " + message);
+	    		String returnStr = echo(message);
+	    		System.out.println("Receiving: " + returnStr);
+	    		
+	    		Thread.sleep(1000);
+	    	}
+	    	
+		} catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
 		try {
 			for(;;)
 			{
@@ -40,6 +74,40 @@ public class TimeSystem extends Thread {
 			e.printStackTrace();
 		}
 	}
+	 // make the connection with the socket
+ 	private void socketConnect(String ip, int port) throws UnknownHostException, IOException {
+ 		System.out.println("[Connecting to socket...]");
+ 		this.socket = new Socket(ip, port);
+ 		
+ 	}
+ 	
+ 	// writes and receives the full message int the socket (String)
+ 	public String echo(String message) {
+ 		try {
+ 			// out & in 
+ 			PrintWriter out = new PrintWriter(getSocket().getOutputStream(), true);
+ 			BufferedReader in = new BufferedReader(new InputStreamReader(getSocket().getInputStream()));
+ 			
+ 			// writes str in the socket and read
+ 			out.println(message);
+ 			String returnStr = in .readLine();
+ 			return returnStr;
+ 			} catch (IOException e) {
+ 				e.printStackTrace();
+ 				}
+ 		
+ 		return null;
+ 		}
+ 	
+ 	// get the socket instance
+ 	
+ 	private Socket getSocket() {
+ 		return socket;
+ 		}
+
+
+
+
 	
 	//날짜가 바뀌면 true 리턴
 	public boolean dayChangeCheck () {
