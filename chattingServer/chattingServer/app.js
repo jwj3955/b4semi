@@ -1,4 +1,4 @@
-var app=require("express")(); //require메소드로 express 모듈을 생성해서 무언가를 가져온다
+/*var app=require("express")(); //require메소드로 express 모듈을 생성해서 무언가를 가져온다
 var http=require("http").Server(app); //프로토콜 정의 및 프레임 워크를 적용한다!
 var io=require("socket.io")(http); //입출력 생성
 
@@ -36,4 +36,37 @@ io.on("connection", function(socket){
 		
 		io.emit("message",msg); //접속된 사용자 전체에게 msg전송
 	});
-});
+});*/
+
+var net = require('net');
+var HOST = '127.0.0.1'; // parameterize the IP of the Listen
+var PORT = 9080; // TCP LISTEN port
+
+//Create an instance of the Server and waits for a conexão
+net.createServer(function(sock) {
+	sock.setEncoding("UTF-8");
+
+//	Receives a connection - a socket object is associated to the connection automatically
+	console.log('CONNECTED: ' + sock.remoteAddress +':'+ sock.remotePort);
+
+//	Add a 'data' - "event handler" in this socket instance
+	sock.on('data', function(data) {
+//		data was received in the socket
+//		Writes the received message back to the socket (echo)
+		sock.write("답변이다 : "+data);
+	});
+
+//	Add a 'close' - "event handler" in this socket instance
+	sock.on('close', function(data) {
+//		closed connection
+		console.log('CLOSED: ' + sock.remoteAddress +' '+ sock.remotePort);
+	});
+	
+	sock.on('error', function(data) {
+//		error connection
+		console.log('ERROR: ' + sock.remoteAddress +' '+ sock.remotePort);
+	});
+
+}).listen(PORT, HOST);
+
+console.log('Server listening on ' + HOST +':'+ PORT);
