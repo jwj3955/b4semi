@@ -13,6 +13,7 @@
             width: 1024px;
             font-family: 'Noto Sans KR';
             font-size: 14px;
+            margin-top: 100px;
         }
 
         .support-notice-view-wrapper input
